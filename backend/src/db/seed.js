@@ -1,3 +1,4 @@
+process.env.DATABASE_URL = "postgresql://...";
 const pool = require('./db');
 
 const categories = ['Electronics', 'Clothing', 'Food & Beverages', 'Books', 'Sports', 'Home & Garden', 'Toys', 'Automotive'];
