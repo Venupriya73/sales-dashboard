@@ -1,3 +1,5 @@
+## Live Demo
+https://sales-dashboard-ruddy-five.vercel.app
 # Sales Analytics Dashboard
 
 A full-stack analytics dashboard built with Next.js 14, Node.js, Express, and PostgreSQL.
