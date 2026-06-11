@@ -10,8 +10,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function Dashboard() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [summary, setSummary] = useState(null);
-  const [charts, setCharts] = useState(null);
+  const [summary, setSummary] = useState<any>(null);
+  const [charts, setCharts] = useState<any>(null);
   const [filterOptions, setFilterOptions] = useState({ categories: [], regions: [] });
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [chartsLoading, setChartsLoading] = useState(true);
