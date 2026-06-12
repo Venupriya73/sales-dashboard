@@ -188,8 +188,11 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
           </span>
           <div className="flex items-center gap-2">
             <button
-              disabled={pagination.page === 1}
-              onClick={() => onFilterChange({ page: pagination.page - 1 })}
+              disabled={pagination.page <= 1}
+              onClick={() => {
+                const newPage = pagination.page - 1;
+                onFilterChange({ page: newPage });
+              }}
               className="px-3 py-1 rounded-lg border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {"← Prev"}
@@ -199,7 +202,10 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
             </span>
             <button
               disabled={pagination.page >= pagination.totalPages}
-              onClick={() => onFilterChange({ page: pagination.page + 1 })}
+              onClick={() => {
+                const newPage = pagination.page + 1;
+                onFilterChange({ page: newPage });
+              }}
               className="px-3 py-1 rounded-lg border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {"Next →"}
