@@ -1,9 +1,13 @@
 process.env.DATABASE_URL = "postgresql://...";
+
 const pool = require('./db');
 
 const categories = ['Electronics', 'Clothing', 'Food & Beverages', 'Books', 'Sports', 'Home & Garden', 'Toys', 'Automotive'];
 const regions = ['North', 'South', 'East', 'West', 'Central'];
 const statuses = ['Completed', 'Pending', 'Cancelled', 'Refunded'];
+const customerSegments = ['Retail', 'Wholesale', 'Corporate', 'VIP'];
+const salesChannels = ['Online', 'In-Store', 'Mobile App', 'Phone'];
+const paymentMethods = ['Credit Card', 'Debit Card', 'UPI', 'Net Banking', 'Cash', 'Wallet'];
 
 const firstNames = ['Aarav', 'Priya', 'Rohit', 'Sneha', 'Karthik', 'Divya', 'Arjun', 'Meera', 'Vikram', 'Ananya', 'Suresh', 'Lakshmi', 'Rahul', 'Kavya', 'Deepak', 'Nisha', 'Arun', 'Pooja', 'Manoj', 'Riya'];
 const lastNames = ['Kumar', 'Sharma', 'Patel', 'Reddy', 'Singh', 'Nair', 'Iyer', 'Gupta', 'Mehta', 'Joshi', 'Rao', 'Pillai', 'Verma', 'Shah', 'Das', 'Mishra', 'Bose', 'Chatterjee', 'Mukherjee', 'Ghosh'];
@@ -34,14 +38,10 @@ function randomChoice(arr) {
 
 function generateAmount(category) {
   const ranges = {
-    'Electronics': [999, 89999],
-    'Clothing': [299, 4999],
-    'Food & Beverages': [99, 2999],
-    'Books': [199, 999],
-    'Sports': [299, 9999],
-    'Home & Garden': [499, 19999],
-    'Toys': [199, 4999],
-    'Automotive': [299, 7999],
+    'Electronics': [999, 89999], 'Clothing': [299, 4999],
+    'Food & Beverages': [99, 2999], 'Books': [199, 999],
+    'Sports': [299, 9999], 'Home & Garden': [499, 19999],
+    'Toys': [199, 4999], 'Automotive': [299, 7999],
   };
   const [min, max] = ranges[category];
   return (randomBetween(min * 100, max * 100) / 100).toFixed(2);
@@ -66,25 +66,30 @@ async function seed() {
       const product = randomChoice(products[category]);
       const firstName = randomChoice(firstNames);
       const lastName = randomChoice(lastNames);
+      const amount = parseFloat(generateAmount(category));
+      const tax = parseFloat((amount * 0.18).toFixed(2));
+      const discount = parseFloat((amount * (randomBetween(0, 20) / 100)).toFixed(2));
+      const shipping = parseFloat((randomBetween(0, 500)).toFixed(2));
 
-      values.push(`($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`);
+      values.push(`($${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++},$${paramIndex++})`);
       params.push(
         `TXN${String(globalIndex).padStart(6, '0')}`,
         `${firstName} ${lastName}`,
-        product,
-        category,
+        randomChoice(customerSegments),
+        product, category,
         randomChoice(regions),
-        generateAmount(category),
+        randomChoice(salesChannels),
+        randomChoice(paymentMethods),
+        amount, tax, discount, shipping,
         randomChoice(statuses),
         randomDate(startDate, endDate)
       );
     }
 
     await pool.query(
-      `INSERT INTO transactions (transaction_id, customer_name, product_name, category, region, amount, status, transaction_date) VALUES ${values.join(',')}`,
+      `INSERT INTO transactions (transaction_id, customer_name, customer_segment, product_name, category, region, sales_channel, payment_method, amount, tax, discount, shipping, status, transaction_date) VALUES ${values.join(',')}`,
       params
     );
-
     console.log(`✅ Inserted batch ${batch + 1}/${totalRecords / batchSize}`);
   }
 

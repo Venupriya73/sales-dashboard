@@ -8,10 +8,16 @@ export interface Transaction {
   id: number;
   transaction_id: string;
   customer_name: string;
+  customer_segment: string;
   product_name: string;
   category: string;
   region: string;
+  sales_channel: string;
+  payment_method: string;
   amount: string;
+  tax: string;
+  discount: string;
+  shipping: string;
   status: string;
   transaction_date: string;
 }
@@ -30,6 +36,9 @@ export interface TransactionsResponse {
 
 export interface Summary {
   total_revenue: string;
+  total_tax: string;
+  total_discount: string;
+  total_shipping: string;
   total_orders: string;
   avg_order_value: string;
   total_customers: string;
@@ -42,6 +51,10 @@ export interface Filters {
   endDate?: string;
   category?: string;
   region?: string;
+  status?: string;
+  customerSegment?: string;
+  salesChannel?: string;
+  paymentMethod?: string;
   search?: string;
   page?: number;
   limit?: number;

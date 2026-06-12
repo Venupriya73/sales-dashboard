@@ -13,10 +13,16 @@ const STATUS_COLORS: Record<string, string> = {
 const COLUMNS = [
   { key: 'transaction_id', label: 'Transaction ID', sortable: true },
   { key: 'customer_name', label: 'Customer', sortable: true },
+  { key: 'customer_segment', label: 'Segment', sortable: true },
   { key: 'product_name', label: 'Product', sortable: true },
   { key: 'category', label: 'Category', sortable: true },
   { key: 'region', label: 'Region', sortable: true },
+  { key: 'sales_channel', label: 'Channel', sortable: true },
+  { key: 'payment_method', label: 'Payment', sortable: true },
   { key: 'amount', label: 'Amount', sortable: true },
+  { key: 'tax', label: 'Tax', sortable: true },
+  { key: 'discount', label: 'Discount', sortable: true },
+  { key: 'shipping', label: 'Shipping', sortable: true },
   { key: 'status', label: 'Status', sortable: true },
   { key: 'transaction_date', label: 'Date', sortable: true },
 ];
@@ -54,6 +60,10 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
         endDate: filters.endDate,
         category: filters.category !== 'all' ? filters.category : undefined,
         region: filters.region !== 'all' ? filters.region : undefined,
+        status: filters.status !== 'all' ? filters.status : undefined,
+        customerSegment: filters.customerSegment !== 'all' ? filters.customerSegment : undefined,
+        salesChannel: filters.salesChannel !== 'all' ? filters.salesChannel : undefined,
+        paymentMethod: filters.paymentMethod !== 'all' ? filters.paymentMethod : undefined,
         search: filters.search,
         page: filters.page,
         limit: filters.limit,
@@ -87,14 +97,16 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
   };
 
   const SortIcon = ({ col }: { col: string }) => {
-    if (filters.sortBy !== col) return <span className="text-gray-600 ml-1">↕</span>;
+    if (filters.sortBy !== col) return <span className="text-gray-600 ml-1">{"↕"}</span>;
     return <span className="text-indigo-400 ml-1">{filters.sortOrder === 'ASC' ? '↑' : '↓'}</span>;
   };
+
+  const fmt = (v: string) => parseFloat(v).toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
       <div className="p-4 border-b border-white/10 flex items-center justify-between gap-4 flex-wrap">
-        <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Transactions</h3>
+        <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">{"Transactions"}</h3>
         <input
           type="text"
           placeholder="Search by ID, customer, or product..."
@@ -106,8 +118,8 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
 
       {error && (
         <div className="p-4 bg-red-500/10 border-b border-red-500/20 text-red-400 text-sm">
-          ⚠️ {error}
-          <button onClick={load} className="ml-3 underline">Retry</button>
+          {"⚠️"} {error}
+          <button onClick={load} className="ml-3 underline">{"Retry"}</button>
         </div>
       )}
 
@@ -129,13 +141,13 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
           </thead>
           <tbody>
             {loading
-              ? Array.from({ length: filters.limit }).map((_, i) => <SkeletonRow key={i} />)
+              ? Array.from({ length: 10 }).map((_, i) => <SkeletonRow key={i} />)
               : data.length === 0
               ? (
                 <tr>
                   <td colSpan={COLUMNS.length} className="px-4 py-16 text-center text-gray-500">
-                    <div className="text-4xl mb-2">🔍</div>
-                    <p>No transactions found matching your filters.</p>
+                    <div className="text-4xl mb-2">{"🔍"}</div>
+                    <p>{"No transactions found matching your filters."}</p>
                   </td>
                 </tr>
               )
@@ -143,12 +155,16 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
                 <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="px-4 py-3 font-mono text-indigo-400 text-xs">{tx.transaction_id}</td>
                   <td className="px-4 py-3 text-gray-200">{tx.customer_name}</td>
-                  <td className="px-4 py-3 text-gray-300 max-w-[180px] truncate">{tx.product_name}</td>
+                  <td className="px-4 py-3 text-gray-400">{tx.customer_segment}</td>
+                  <td className="px-4 py-3 text-gray-300 max-w-[150px] truncate">{tx.product_name}</td>
                   <td className="px-4 py-3 text-gray-400">{tx.category}</td>
                   <td className="px-4 py-3 text-gray-400">{tx.region}</td>
-                  <td className="px-4 py-3 text-white font-medium">
-                    ₹{parseFloat(tx.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                  </td>
+                  <td className="px-4 py-3 text-gray-400">{tx.sales_channel}</td>
+                  <td className="px-4 py-3 text-gray-400">{tx.payment_method}</td>
+                  <td className="px-4 py-3 text-white font-medium">{"₹"}{fmt(tx.amount)}</td>
+                  <td className="px-4 py-3 text-yellow-400">{"₹"}{fmt(tx.tax)}</td>
+                  <td className="px-4 py-3 text-green-400">{"₹"}{fmt(tx.discount)}</td>
+                  <td className="px-4 py-3 text-blue-400">{"₹"}{fmt(tx.shipping)}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[tx.status] || ''}`}>
                       {tx.status}
@@ -167,8 +183,8 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
       {pagination && !loading && data.length > 0 && (
         <div className="p-4 border-t border-white/10 flex items-center justify-between flex-wrap gap-3 text-sm">
           <span className="text-gray-400">
-            Showing {((pagination.page - 1) * pagination.limit) + 1}–
-            {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total.toLocaleString()} records
+            {"Showing"} {((pagination.page - 1) * pagination.limit) + 1}{"–"}
+            {Math.min(pagination.page * pagination.limit, pagination.total)} {"of"} {pagination.total.toLocaleString()} {"records"}
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -176,17 +192,17 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
               onClick={() => onFilterChange({ page: pagination.page - 1 })}
               className="px-3 py-1 rounded-lg border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              ← Prev
+              {"← Prev"}
             </button>
             <span className="text-gray-300 px-2">
-              Page {pagination.page} of {pagination.totalPages}
+              {"Page"} {pagination.page} {"of"} {pagination.totalPages}
             </span>
             <button
-              disabled={pagination.page === pagination.totalPages}
+              disabled={pagination.page >= pagination.totalPages}
               onClick={() => onFilterChange({ page: pagination.page + 1 })}
               className="px-3 py-1 rounded-lg border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              Next →
+              {"Next →"}
             </button>
           </div>
           <select
@@ -195,7 +211,7 @@ export default function TransactionsTable({ filters, onFilterChange }: Props) {
             className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-gray-300 text-sm"
           >
             {[10, 20, 50, 100].map(n => (
-              <option key={n} value={n} className="bg-gray-900">{n} per page</option>
+              <option key={n} value={n} className="bg-gray-900">{n} {"per page"}</option>
             ))}
           </select>
         </div>

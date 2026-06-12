@@ -5,6 +5,10 @@ export interface FilterState {
   endDate: string;
   category: string;
   region: string;
+  status: string;
+  customerSegment: string;
+  salesChannel: string;
+  paymentMethod: string;
   search: string;
   page: number;
   limit: number;
@@ -17,6 +21,10 @@ export const defaultFilters: FilterState = {
   endDate: '',
   category: 'all',
   region: 'all',
+  status: 'all',
+  customerSegment: 'all',
+  salesChannel: 'all',
+  paymentMethod: 'all',
   search: '',
   page: 1,
   limit: 20,

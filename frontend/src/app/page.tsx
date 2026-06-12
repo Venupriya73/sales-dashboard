@@ -12,7 +12,10 @@ export default function Dashboard() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [summary, setSummary] = useState<any>(null);
   const [charts, setCharts] = useState<any>(null);
-  const [filterOptions, setFilterOptions] = useState({ categories: [], regions: [] });
+  const [filterOptions, setFilterOptions] = useState({
+    categories: [], regions: [], statuses: [],
+    customerSegments: [], salesChannels: [], paymentMethods: []
+  });
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [chartsLoading, setChartsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -22,6 +25,10 @@ export default function Dashboard() {
     endDate: filters.endDate,
     category: filters.category !== 'all' ? filters.category : undefined,
     region: filters.region !== 'all' ? filters.region : undefined,
+    status: filters.status !== 'all' ? filters.status : undefined,
+    customerSegment: filters.customerSegment !== 'all' ? filters.customerSegment : undefined,
+    salesChannel: filters.salesChannel !== 'all' ? filters.salesChannel : undefined,
+    paymentMethod: filters.paymentMethod !== 'all' ? filters.paymentMethod : undefined,
     search: filters.search,
   };
 
@@ -46,12 +53,13 @@ export default function Dashboard() {
       setSummaryLoading(false);
       setChartsLoading(false);
     }
-  }, [filters.startDate, filters.endDate, filters.category, filters.region, filters.search]);
+  }, [filters.startDate, filters.endDate, filters.category, filters.region,
+      filters.status, filters.customerSegment, filters.salesChannel, filters.paymentMethod, filters.search]);
 
   useEffect(() => { loadTopData(); }, [loadTopData]);
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
   };
 
   const handleReset = () => setFilters(defaultFilters);
@@ -62,20 +70,15 @@ export default function Dashboard() {
         <header className="border-b border-white/10 bg-[#0f1117]/80 backdrop-blur-sm sticky top-0 z-30">
           <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">
-                Sales Analytics
-              </h1>
-              <p className="text-sm text-gray-400">
-                Real-time insights from 10,000+ transactions
-              </p>
+              <h1 className="text-2xl font-bold tracking-tight text-white">{"Sales Analytics"}</h1>
+              <p className="text-sm text-gray-400">{"Real-time insights from 10,000+ transactions"}</p>
             </div>
-            
-              <button
-  onClick={() => window.open(getExportUrl(activeFilters), '_blank')}
-  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
->
-  {"Export CSV"}
-</button>
+            <button
+              onClick={() => window.open(getExportUrl(activeFilters), '_blank')}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              {"Export CSV"}
+            </button>
           </div>
         </header>
         <div className="max-w-screen-2xl mx-auto px-6 py-8 space-y-8">
@@ -84,18 +87,10 @@ export default function Dashboard() {
               {error}
             </div>
           )}
-          <FilterBar
-            filters={filters}
-            filterOptions={filterOptions}
-            onChange={handleFilterChange}
-            onReset={handleReset}
-          />
+          <FilterBar filters={filters} filterOptions={filterOptions} onChange={handleFilterChange} onReset={handleReset} />
           <SummaryCards summary={summary} loading={summaryLoading} />
           <ChartsSection charts={charts} loading={chartsLoading} />
-          <TransactionsTable
-            filters={filters}
-            onFilterChange={handleFilterChange}
-          />
+          <TransactionsTable filters={filters} onFilterChange={handleFilterChange} />
         </div>
       </main>
     </ErrorBoundary>
