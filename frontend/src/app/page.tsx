@@ -59,7 +59,7 @@ export default function Dashboard() {
   useEffect(() => { loadTopData(); }, [loadTopData]);
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
-    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+    setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
   const handleReset = () => setFilters(defaultFilters);
