@@ -93,7 +93,7 @@ export default function ChartsSection({ charts, loading }: { charts: any; loadin
         <ResponsiveContainer width="100%" height={240}>
           <PieChart>
             <Pie
-              data={charts.byStatus}
+              data={charts.byStatus.map((d: any) => ({ ...d, count: parseInt(d.count) }))}
               dataKey="count"
               nameKey="status"
               cx="50%"
