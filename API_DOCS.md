@@ -2,6 +2,8 @@
 
 Base URL: https://sales-dashboard-production-b5f1.up.railway.app/api
 
+Health Check: https://sales-dashboard-production-b5f1.up.railway.app/api/health
+
 ## Endpoints
 
 ### GET /transactions
