@@ -29,16 +29,34 @@ export default function ChartsSection({ charts, loading }: { charts: any; loadin
         <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">
           {"Revenue Trend"}
         </h3>
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={charts.revenueTrend}>
+        <ResponsiveContainer width="100%" height={280}>
+          <LineChart
+            data={charts.revenueTrend.map((d: any) => ({ ...d, revenue: parseFloat(d.revenue) }))}
+            margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} />
-            <YAxis tickFormatter={v => `${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 11, fill: '#9ca3af' }} />
+            <XAxis
+              dataKey="month"
+              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              tickMargin={8}
+            />
+            <YAxis
+              tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
+              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              width={50}
+            />
             <Tooltip
               contentStyle={{ backgroundColor: '#1f2937', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
               formatter={(v: number) => [formatCurrency(v), 'Revenue']}
             />
-            <Line type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} dot={false} />
+            <Line
+              type="monotone"
+              dataKey="revenue"
+              stroke="#6366f1"
+              strokeWidth={2}
+              dot={{ fill: '#6366f1', r: 4 }}
+              activeDot={{ r: 6 }}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
