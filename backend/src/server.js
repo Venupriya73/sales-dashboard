@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
 const transactionRoutes = require('./routes/transactions');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -10,7 +11,7 @@ app.use(cors({
   origin: function(origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
-      'https://sales-dashboard-venupriya.vercel.app'
+      'https://sales-dashboard-ruddy-five.vercel.app'
     ];
     if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
       callback(null, true);
@@ -22,6 +23,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
